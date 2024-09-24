@@ -1,16 +1,14 @@
-import { StyleSheet } from 'react-native';
-import { Text, View } from '@/src/components/Themed';
+import { StyleSheet, FlatList } from 'react-native';
+import { Text, View, } from '@/src/components/Themed';
+import { tracks } from '@/assets/data/tracks';
+import TrackListItem from '@/src/components/TrackListItem';
 
-export default function TabOneScreen() {
+export default function HomeScreen() {
   return (
-    <View style={styles.container}></View>
+      <FlatList 
+        data={tracks} 
+        renderItem={({ item }) => <TrackListItem track={item}/> }
+        showsVerticalScrollIndicator={false}
+      />
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
