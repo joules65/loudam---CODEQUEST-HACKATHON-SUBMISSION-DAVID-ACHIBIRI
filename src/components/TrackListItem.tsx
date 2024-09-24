@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         color: 'lightblue',
     },
     image: {
-        width: 50,
+        width: 48,
         aspectRatio: 1,
         borderRadius: 5,
         marginRight: 10,
