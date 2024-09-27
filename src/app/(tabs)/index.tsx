@@ -1,15 +1,54 @@
-import { StyleSheet, FlatList } from 'react-native';
-import { Text, View, } from 'react-native';
-import { tracks } from '@/assets/data/tracks';
-import TrackListItem from '@/src/components/TrackListItem';
-import Player from '@/src/components/Player';
+import { ActivityIndicator, FlatList, Text } from 'react-native';
+import TrackListItem from '../../components/TrackListItem';
+import { gql, useQuery } from '@apollo/client';
+
+const query = gql`
+  query MyQuery($genres: String!) {
+    recommendations(seed_genres: $genres) {
+      tracks {
+        id
+        name
+        preview_url
+        artists {
+          id
+          name
+        }
+        album {
+          id
+          name
+          images {
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+`;
 
 export default function HomeScreen() {
+  const { data, loading, error } = useQuery(query, {
+    variables: { genres: 'pop,house,afrobeat,r-n-b,soul' },
+  });
+
+  if (loading) {
+    return <ActivityIndicator />;
+  }
+
+  if (error) {
+    return (
+      <Text style={{ color: 'white' }}>Failed to fetch recommendations</Text>
+    );
+  }
+
+  const tracks = data?.recommendations?.tracks || [];
+
   return (
-      <FlatList 
-        data={tracks} 
-        renderItem={({ item }) => <TrackListItem track={item}/> }
-        showsVerticalScrollIndicator={false}
-      />
+    <FlatList
+      data={tracks}
+      renderItem={({ item }) => <TrackListItem track={item} />}
+      showsVerticalScrollIndicator={false}
+    />
   );
 }
