@@ -2,26 +2,61 @@ import { View, Text, StyleSheet, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { usePlayerContext } from '../providers/PlayerProvider';
 import { useEffect, useState } from 'react';
-import { Audio, AVPlaybackStatus } from 'expo-av';
+import { AVPlaybackStatus, Audio } from 'expo-av';
 import { Sound } from 'expo-av/build/Audio';
+import { gql, useMutation, useQuery } from '@apollo/client';
+
+const insertFavoriteMutation = gql`
+  mutation MyMutation($userId: String!, $trackId: String!) {
+    insertFavorites(userid: $userId, trackid: $trackId) {
+      id
+      trackid
+      userid
+    }
+  }
+`;
+
+const removeFavoriteMutation = gql`
+  mutation MyMutation($trackId: String!, $userId: String!) {
+    deleteFavorites(trackid: $trackId, userid: $userId) {
+      id
+    }
+  }
+`;
+
+const isFavoriteQuery = gql`
+  query MyQuery($trackId: String!, $userId: String!) {
+    favoritesByTrackidAndUserid(trackid: $trackId, userid: $userId) {
+      id
+      trackid
+      userid
+    }
+  }
+`;
 
 const Player = () => {
   const [sound, setSound] = useState<Sound>();
   const [isPlaying, setIsPlaying] = useState(false);
   const { track } = usePlayerContext();
 
+  const [insertFavorite] = useMutation(insertFavoriteMutation);
+  const [removeFavorite] = useMutation(removeFavoriteMutation);
+
+  const { data, refetch } = useQuery(isFavoriteQuery, {
+    variables: { userId: 'vadim', trackId: track?.id || '' },
+  });
+  const isLiked = data?.favoritesByTrackidAndUserid?.length > 0;
+
   useEffect(() => {
-    if (track) {
-      playTrack();
-    }
+    playTrack();
   }, [track]);
 
   useEffect(() => {
     return sound
       ? () => {
-        console.log('Unloading Sound');
-        sound.unloadAsync();
-      }
+          console.log('Unloading Sound');
+          sound.unloadAsync();
+        }
       : undefined;
   }, [sound]);
 
@@ -30,37 +65,49 @@ const Player = () => {
       await sound.unloadAsync();
     }
 
-    if(!track?.preview_url) {
+    if (!track?.preview_url) {
       return;
     }
-    console.log('Playing: ', track.id);
-
-    const {sound: newSound} = await Audio.Sound.createAsync({
+    const { sound: newSound } = await Audio.Sound.createAsync({
       uri: track.preview_url,
     });
+
     setSound(newSound);
-    newSound.setOnPlaybackStatusUpdate(onPlayBackStatusUpdate);
+    newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
     await newSound.playAsync();
   };
 
-  const onPlayBackStatusUpdate = (status: AVPlaybackStatus) => {
-    console.log(status);
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     if (!status.isLoaded) {
       return;
     }
+
     setIsPlaying(status.isPlaying);
   };
 
   const onPlayPause = async () => {
-    if(!sound) {
+    if (!sound) {
       return;
     }
-    if(isPlaying) {
+    if (isPlaying) {
       await sound.pauseAsync();
     } else {
       await sound.playAsync();
     }
-    
+  };
+
+  const onLike = async () => {
+    if (!track) return;
+    if (isLiked) {
+      await removeFavorite({
+        variables: { userId: 'vadim', trackId: track.id },
+      });
+    } else {
+      await insertFavorite({
+        variables: { userId: 'vadim', trackId: track.id },
+      });
+    }
+    refetch();
   };
 
   if (!track) {
@@ -80,7 +127,8 @@ const Player = () => {
         </View>
 
         <Ionicons
-          name={'heart-outline'}
+          onPress={onLike}
+          name={isLiked ? 'heart' : 'heart-outline'}
           size={20}
           color={'white'}
           style={{ marginHorizontal: 10 }}
@@ -100,8 +148,8 @@ const Player = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+    top: -75,
     width: '100%',
-    top: -85,
     height: 75,
     padding: 10,
   },
