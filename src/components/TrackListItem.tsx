@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
         padding: 5,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'lightblue'
+        backgroundColor: 'turquoise'
     },
 
     title: {
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     subtitle: {
-        color: 'lightblue',
+        color: 'gold',
     },
     image: {
         width: 48,

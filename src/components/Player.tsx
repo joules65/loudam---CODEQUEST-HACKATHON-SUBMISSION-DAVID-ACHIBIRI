@@ -43,7 +43,7 @@ const Player = () => {
   const [removeFavorite] = useMutation(removeFavoriteMutation);
 
   const { data, refetch } = useQuery(isFavoriteQuery, {
-    variables: { userId: 'vadim', trackId: track?.id || '' },
+    variables: { userId: 'neon_db', trackId: track?.id || '' },
   });
   const isLiked = data?.favoritesByTrackidAndUserid?.length > 0;
 
@@ -100,11 +100,11 @@ const Player = () => {
     if (!track) return;
     if (isLiked) {
       await removeFavorite({
-        variables: { userId: 'vadim', trackId: track.id },
+        variables: { userId: 'neon_db', trackId: track.id },
       });
     } else {
       await insertFavorite({
-        variables: { userId: 'vadim', trackId: track.id },
+        variables: { userId: 'neon_db', trackId: track.id },
       });
     }
     refetch();
