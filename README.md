@@ -1,5 +1,12 @@
 LoudAM is a music streaming app that uses the Spotify for developers api documentation to pull and fetch preview music which runs on the expo app.
 
+To Use the App on your device scan this qr Code:
+![EXPOGO (1)](https://github.com/user-attachments/assets/a10b92d3-f592-4fc8-a5bd-a2cf10170a95)
+
+or use this link: https://expo.dev/preview/update?message=DONE&updateRuntimeVersion=1.0.0&createdAt=2024-09-28T18%3A44%3A43.581Z&slug=exp&projectId=d34cf299-c5bd-4e3b-9eaa-a79f0d825c58&group=dce5295d-b42f-4f00-bc2e-8d45ed47f368
+https://github.com/user-attachments/assets/5d8db444-c8f1-439b-a43b-230858768b91
+
+
 
 
 Player Component Documentation
