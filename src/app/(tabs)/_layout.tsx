@@ -69,6 +69,14 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => <TabBarIcon name="heart" color={color} />,
         }}
       />
+
+    <Tabs.Screen
+      name="VideoScreen"
+      options={{
+        title: 'Videos',
+        tabBarIcon: ({color}) => <TabBarIcon name="video-camera" color={color} />
+      }}
+    />  
     </Tabs>
   );
 }
